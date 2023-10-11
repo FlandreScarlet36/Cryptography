@@ -2,19 +2,20 @@
 #include <cstring>
 #include <fstream>
 #include <chrono>
+#include <cmath>
 using namespace std;
 using namespace chrono;
 
 int S[16] = { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 };
-int x[16] = {};//Ã÷ÎÄ
-int y[16] = {};//ÃÜÎÄ
-int Count[16][16] = {};//¼ÆÊýÆ÷
+int x[16] = {};//ï¿½ï¿½ï¿½ï¿½
+int y[16] = {};//ï¿½ï¿½ï¿½ï¿½
+int Count[16][16] = {};//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 void DecimalToBinary(int decimal, int* binary, int num);
 
 int main()
 {
-    int S1[16] = {};//SºÐµÄÄæ
+    int S1[16] = {};//Sï¿½Ðµï¿½ï¿½ï¿½
     for (int i = 0; i < 16; i++)
     {
         S1[S[i]] = i;
@@ -22,16 +23,16 @@ int main()
 
     ifstream input(".\\data\\pairs.txt");
 
-    int L1[4] = {};//´ýÇóÃÜÔ¿1 
-    int L2[4] = {};//´ýÇóÃÜÔ¿2
+    int L1[4] = {};//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿1 
+    int L2[4] = {};//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿2
     int v[16] = {};
     int u[16] = {};
 
-    int n = 0;//Ñù±¾Ã÷ÎÄ¶Ô¸öÊý
-    cout << "ÇëÊäÈëÐèÒª·ÖÎöµÄÃ÷ÎÄ¶Ô¸öÊý£º" << endl;
+    int n = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶Ô¸ï¿½ï¿½ï¿½
+    cout << "Please enter the number of quadruple pairs to be analyzed: " << endl;
     cin >> n;
 
-    auto start = high_resolution_clock::now(); //¿ªÊ¼Ê±¼ä
+    auto start = high_resolution_clock::now(); //ï¿½ï¿½Ê¼Ê±ï¿½ï¿½
 
     for (int i = 0; i < n; i++)
     {
@@ -52,23 +53,23 @@ int main()
                 DecimalToBinary(j, L1, 3);
                 DecimalToBinary(k, L2, 3);
 
-                //L_1Óëy_{<2>}Òì»ò
+                //L_1ï¿½ï¿½y_{<2>}ï¿½ï¿½ï¿½
                 v[4] = L1[0] ^ y[4];
                 v[5] = L1[1] ^ y[5];
                 v[6] = L1[2] ^ y[6];
                 v[7] = L1[3] ^ y[7];
-                //L_2Óëy_{<4>}Òì»ò
+                //L_2ï¿½ï¿½y_{<4>}ï¿½ï¿½ï¿½
                 v[12] = L2[0] ^ y[12];
                 v[13] = L2[1] ^ y[13];
                 v[14] = L2[2] ^ y[14];
                 v[15] = L2[3] ^ y[15];
 
                 int temp1 = v[4] * pow(2, 3) + v[5] * pow(2, 2) + v[6] * pow(2, 1) + v[7] * pow(2, 0);
-                int temp2 = S1[temp1];//SºÐµÄÄæÔËËã
+                int temp2 = S1[temp1];//Sï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 DecimalToBinary(temp2, u, 7);
 
                 temp1 = v[12] * pow(2, 3) + v[13] * pow(2, 2) + v[14] * pow(2, 1) + v[15] * pow(2, 0);
-                temp2 = S1[temp1];//SºÐµÄÄæÔËËã
+                temp2 = S1[temp1];//Sï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 DecimalToBinary(temp2, u, 15);
 
                 int z = x[4] ^ x[6] ^ x[7] ^ u[5] ^ u[7] ^ u[13] ^ u[15];
@@ -78,13 +79,13 @@ int main()
         }
     }
 
-    auto stop = high_resolution_clock::now(); //½áÊøÊ±¼ä
-    auto duration = duration_cast<microseconds>(stop - start); //Ö´ÐÐÊ±¼ä
+    auto stop = high_resolution_clock::now(); //ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+    auto duration = duration_cast<microseconds>(stop - start); //Ö´ï¿½ï¿½Ê±ï¿½ï¿½
 
     input.close();
 
     int max = -1;
-    int LL1 = 0, LL2 = 0;//¼ÇÂ¼×î´óµÄCount[i][j]¶ÔÓ¦µÄL1ºÍL2
+    int LL1 = 0, LL2 = 0;//ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½Count[i][j]ï¿½ï¿½Ó¦ï¿½ï¿½L1ï¿½ï¿½L2
     for (int i = 0; i < 16; i++)
     {
         for (int j = 0; j < 16; j++)
@@ -112,7 +113,7 @@ int main()
         cout << L2[i];
     }
 
-    cout << endl << "time£º" << endl << duration.count() << " Î¢Ãë" << endl;
+    cout << endl << "time: " << duration.count() << "ms" << endl;
 
     system("pause");
     return 0;
@@ -120,14 +121,14 @@ int main()
 
 void DecimalToBinary(int decimal, int* binary, int num)
 {
-    int i = num - 3;//×îµÍË÷ÒýÎ»
+    int i = num - 3;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»
     while (decimal > 0)
     {
         binary[num] = decimal % 2;
         decimal /= 2;
         num--;
     }
-    while (num >= i)//¿ÕÎ»²¹0
+    while (num >= i)//ï¿½ï¿½Î»ï¿½ï¿½0
     {
         binary[num] = 0;
         num--;

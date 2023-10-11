@@ -2,17 +2,18 @@
 #include <cstring>
 #include <fstream>
 #include <chrono>
+#include <cmath>
 using namespace std;
 using namespace chrono;
 
-int S[16] = { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 };
-int Count[16][16] = {};//¼ÆÊıÆ÷
+int S[16] = { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 };//ç½®æ¢è¡¨
+int Count[16][16] = {};//è®¡æ•°
 
 void DecimalToBinary(int decimal, int* binary, int num);
 
 int main()
 {
-	int S1[16] = {};//SºĞµÄÄæ
+	int S1[16] = {};//SĞµ
 	for (int i = 0; i < 16; i++)
 	{
 		S1[S[i]] = i;
@@ -28,11 +29,11 @@ int main()
 	int u2[16] = {};
 	int u3[16] = {};
 
-	int n = 0;//Ñù±¾ËÄÔª×é¶Ô¸öÊı
-	cout << "ÇëÊäÈëĞèÒª·ÖÎöµÄËÄÔª×é¶Ô¸öÊı£º" << endl;
+	int n = 0;
+	cout << "Please enter the number of quadruple pairs to be analyzed: ";
 	cin >> n;
 
-	auto start = high_resolution_clock::now(); //¿ªÊ¼Ê±¼ä
+	auto start = high_resolution_clock::now();
 
 	for (int i = 0; i < n; i++)
 	{
@@ -65,11 +66,11 @@ int main()
 				v1[15] = L2[3] ^ y1[15];
 
 				int temp1 = v1[4] * pow(2, 3) + v1[5] * pow(2, 2) + v1[6] * pow(2, 1) + v1[7] * pow(2, 0);
-				int temp2 = S1[temp1];//SºĞµÄÄæÔËËã
+				int temp2 = S1[temp1];
 				DecimalToBinary(temp2, u1, 7);
 
 				temp1 = v1[12] * pow(2, 3) + v1[13] * pow(2, 2) + v1[14] * pow(2, 1) + v1[15] * pow(2, 0);
-				temp2 = S1[temp1];//SºĞµÄÄæÔËËã
+				temp2 = S1[temp1];
 				DecimalToBinary(temp2, u1, 15);
 
 				v2[4] = L1[0] ^ y2[4];
@@ -82,11 +83,11 @@ int main()
 				v2[15] = L2[3] ^ y2[15];
 
 				temp1 = v2[4] * pow(2, 3) + v2[5] * pow(2, 2) + v2[6] * pow(2, 1) + v2[7] * pow(2, 0);
-				temp2 = S1[temp1];//SºĞµÄÄæÔËËã
+				temp2 = S1[temp1];
 				DecimalToBinary(temp2, u2, 7);
 
 				temp1 = v2[12] * pow(2, 3) + v2[13] * pow(2, 2) + v2[14] * pow(2, 1) + v2[15] * pow(2, 0);
-				temp2 = S1[temp1];//SºĞµÄÄæÔËËã
+				temp2 = S1[temp1];
 				DecimalToBinary(temp2, u2, 15);
 
 				u3[4] = u1[4] ^ u2[4];
@@ -112,12 +113,12 @@ int main()
 		}
 
 	}
-	auto stop = high_resolution_clock::now(); //½áÊøÊ±¼ä
-	auto duration = duration_cast<microseconds>(stop - start); //Ö´ĞĞÊ±¼ä
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(stop - start);
 	input.close();
 
 	int max = -1;
-	int LL1 = 0, LL2 = 0;//¼ÇÂ¼×î´óµÄCount[i][j]¶ÔÓ¦µÄL1ºÍL2
+	int LL1 = 0, LL2 = 0;
 	for (int i = 0; i < 16; i++)
 	{
 		for (int j = 0; j < 16; j++)
@@ -143,7 +144,7 @@ int main()
 		cout << L2[i];
 	}
 
-	cout << endl << "time£º" << endl << duration.count() << " Î¢Ãë" << endl;
+	cout << endl << "time: " << duration.count() << "ms" << endl;
 
 	system("pause");
 	return 0;
@@ -151,14 +152,14 @@ int main()
 
 void DecimalToBinary(int decimal, int* binary, int num)
 {
-	int i = num - 3;//×îµÍË÷ÒıÎ»
+	int i = num - 3;
 	while (decimal > 0)
 	{
 		binary[num] = decimal % 2;
 		decimal /= 2;
 		num--;
 	}
-	while (num >= i)//¿ÕÎ»²¹0
+	while (num >= i)
 	{
 		binary[num] = 0;
 		num--;
