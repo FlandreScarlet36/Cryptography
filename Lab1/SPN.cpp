@@ -8,37 +8,6 @@ int P[16] = { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 };
 
 int x[16], y[16], key[32];
 
-void Substitution(int* a, int* b, int* s);
-void Permutation(int* a, int* b, int* p);
-void SPN(int* x, int* y, int* s, int* p, int* key);
-
-int main()
-{
-    string X, Key;
-    cin >> X >> Key;
-
-    int len = X.length();
-    for (int i = 0; i < len; i++)
-    {
-        x[i] = X[i] - '0';
-    }
-
-    len = Key.length();
-    for (int i = 0; i < len; i++)
-    {
-        key[i] = Key[i] - '0';
-    }
-
-    SPN(x, y, S, P, key);
-
-    for (int i = 0; i < 16; i++)
-    {
-        cout << y[i];
-    }
-    system("pause");
-    return 0;
-}
-
 void Substitution(int* a, int* b, int* s)
 {
     int T[4] = {};
@@ -115,4 +84,31 @@ void SPN(int* x, int* y, int* s, int* p, int* key)
     {
         y[j] = v[j] ^ k[j];
     }
+}
+
+int main()
+{
+    string X, Key;
+    cin >> X >> Key;
+
+    int len = X.length();
+    for (int i = 0; i < len; i++)
+    {
+        x[i] = X[i] - '0';
+    }
+
+    len = Key.length();
+    for (int i = 0; i < len; i++)
+    {
+        key[i] = Key[i] - '0';
+    }
+
+    SPN(x, y, S, P, key);
+
+    for (int i = 0; i < 16; i++)
+    {
+        cout << y[i];
+    }
+    system("pause");
+    return 0;
 }
