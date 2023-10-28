@@ -1,46 +1,47 @@
 
 
+## 2110688 史文天 信息安全专业 第一次实验报告
+
 # 线性攻击算法
 
 ## （一）线性攻击算法实现
 
-* 随机生成16000个16位二进制串，将其放入前面得到的SPN加密算法中，以`00111010100101001101011000111111`为密钥进行加密得到密文，然后将明密文对写入`pairs.txt`文件，得到本次实验的数据集。该密钥$K_5$轮密钥为`1101011000111111`。
+* 通过Python脚本随机生成16000个16位二进制串，将其放入SPN加密算法中，以`00111010100101001101011000111111`为密钥进行加密得到密文，然后将明密文对写入`pairs.txt`文件，得到本次实验的数据集。该密钥$K_5$轮密钥为`1101011000111111`
 
   ```python
-  import subprocess
-  import random
+  import subprocess  # 导入subprocess模块，用于执行外部命令
+  import random  # 导入random模块，用于生成随机数据
   
+  # 生成指定长度的随机二进制字符串
   def generate_random_binary_string(length=16):
       return ''.join(random.choice('01') for _ in range(length))
   
-  executable_file_path = "./SPN.exe"
-  num_pairs = 16000
+  executable_file_path = "./SPN.exe"  # 定义外部可执行文件的路径
+  num_pairs = 16000  # 定义要生成的数据对数
   
+  # 打开文件以写入生成的数据对，"pairs.txt"是文件名
   with open("./data/pairs.txt", "w") as file:
-      for _ in range(num_pairs), desc="Generating Pairs", unit="pair":
-          input_data = generate_random_binary_string()
-          result = subprocess.run([executable_file_path], input=input_data.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-          output_data = result.stdout.decode().strip()
+      for _ in range(num_pairs):  # 生成指定数量的数据对
+          input_data = generate_random_binary_string()  # 生成随机的输入数据
   
+          # 运行外部可执行文件并将输入数据传递给它
+          result = subprocess.run([executable_file_path], input=input_data.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+          output_data = result.stdout.decode().strip()  # 获取外部命令的标准输出
+  
+          # 将生成的输入数据和外部命令的输出数据写入文件
           file.write(input_data + "\n")
           file.write(output_data + "\n")
-  
-  print(f"Generated {num_pairs} pairs and saved to pairs.txt.")
   ```
   
-* 全局部分定义了`S`盒、明文与密文数组及计数器。
+* 全局部分定义了`S`盒、明文与密文数组、计数器，以及Dec2Bin（十进制转二进制）的函数。
 
   ```c++
-  int S[16] = { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 };//S盒
-  int x[16] = {};//明文
-  int y[16] = {};//密文
-  int Count[16][16] = {};//计数器
-  ```
-
-* 接着定义了一个函数`DecimalToBinary`，用于将十进制数转换成四位二进制，并将其按照给定的索引位存入数组。
-
-  ```c++
-  void DecimalToBinary(int decimal, int* binary, int num){
+  int S[16] = { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 };// S盒
+  int x[16] = {};// 明文
+  int y[16] = {};// 密文
+  int Count[16][16] = {};// 计数器
+  // 将十进制数转换为二进制表示
+  void Dec2Bin(int decimal, int* binary, int num){
       int i = num - 3;
       while (decimal > 0){
           binary[num] = decimal % 2;
@@ -53,59 +54,84 @@
       }
   }
   ```
-  
+
 * 下面便是`main`函数部分。
 
-  * 首先对`S`盒进行逆运算，存入数组`S1`。
+  * 遍历`(0,0) to (F,F)`，按照算法内容进行计算，得到对应的计数器。
 
     ```c++
-    int S1[16] = {};//对S盒求逆
+    int S1[16] = {};
     for (int i = 0; i < 16; i++){
-      S1[S[i]] = i;
+        S1[S[i]] = i;
     }
-    ```
     
-  * 接着读入数据集。
-  
-    ```c++
+    //读入数据集
     ifstream input(".\\data\\pairs.txt");
-    ```
-  
-  * 然后遍历`(0,0) to (F,F)`，按照算法内容进行计算，得到对应的计数器。
-  
-    ```c++
-    for (int j = 0; j < 16; j++)
+    
+    // 遍历(0,0) to (F,F)，按照算法内容进行计算，得到对应的计数器
+    int L1[4] = {};
+    int L2[4] = {};
+    int v[16] = {};
+    int u[16] = {};
+    
+    int n = 0;
+    cout << "Please enter the number of quadruple pairs to be analyzed: " << endl;
+    cin >> n;
+    
+    auto start = high_resolution_clock::now();
+    
+    for (int i = 0; i < n; i++)
     {
-        for (int k = 0; k < 16; k++)
-        {
-            //for(L_1,L_2) <- (0,0) to (F,F)
-            DecimalToBinary(j, L1, 3);
-            DecimalToBinary(k, L2, 3);
+        string X, Y;
+        input >> X >> Y;
     
-            //L_1与y_{<2>}异或
-            v[4] = L1[0] ^ y[4];
-            v[5] = L1[1] ^ y[5];
-            v[6] = L1[2] ^ y[6];
-            v[7] = L1[3] ^ y[7];
-            //L_2与y_{<4>}异或
-            v[12] = L2[0] ^ y[12];
-            v[13] = L2[1] ^ y[13];
-            v[14] = L2[2] ^ y[14];
-            v[15] = L2[3] ^ y[15];
+        int len = X.length();
+        for (int j = 0; j < len; j++) 
+            x[j] = X[j] - '0';
     
-            int temp1 = v[4] * pow(2, 3) + v[5] * pow(2, 2) + v[6] * pow(2, 1) + v[7] * pow(2, 0);
-            int temp2 = S1[temp1];//S盒的逆运算
-            DecimalToBinary(temp2, u, 7);
+        len = Y.length();
+        for (int j = 0; j < len; j++) 
+            y[j] = Y[j] - '0';
     
-            temp1 = v[12] * pow(2, 3) + v[13] * pow(2, 2) + v[14] * pow(2, 1) + v[15] * pow(2, 0);
-            temp2 = S1[temp1];//S盒的逆运算
-            DecimalToBinary(temp2, u, 15);
+        for (int j = 0; j < 16; j++){
+            for (int k = 0; k < 16; k++){
+                // 枚举 L1 和 L2 的可能取值
+                DecimalToBinary(j, L1, 3);
+                DecimalToBinary(k, L2, 3);
     
-            int z = x[4] ^ x[6] ^ x[7] ^ u[5] ^ u[7] ^ u[13] ^ u[15];
+                // 计算 v 数组的元素
+                v[4] = L1[0] ^ y[4];
+                v[5] = L1[1] ^ y[5];
+                v[6] = L1[2] ^ y[6];
+                v[7] = L1[3] ^ y[7];
     
-            if (z == 0) Count[j][k]++;
+                v[12] = L2[0] ^ y[12];
+                v[13] = L2[1] ^ y[13];
+                v[14] = L2[2] ^ y[14];
+                v[15] = L2[3] ^ y[15];
+    
+                // 对 v 应用 S1 变换，得到 u 数组的元素
+                int temp1 = v[4] * pow(2, 3) + v[5] * pow(2, 2) + v[6] * pow(2, 1) + v[7] * pow(2, 0);
+                int temp2 = S1[temp1];
+                DecimalToBinary(temp2, u, 7);
+    
+                temp1 = v[12] * pow(2, 3) + v[13] * pow(2, 2) + v[14] * pow(2, 1) + v[15] * pow(2, 0);
+                temp2 = S1[temp1];
+                Dec2Bin(temp2, u, 15);
+    
+                // 计算 z 值
+                int z = x[4] ^ x[6] ^ x[7] ^ u[5] ^ u[7] ^ u[13] ^ u[15];
+    
+                // 如果 z 等于0，增加 Count[j][k] 计数
+                if (z == 0) Count[j][k]++;
+            }
         }
     }
+    
+    auto stop = high_resolution_clock::now(); 
+    auto duration = duration_cast<microseconds>(stop - start); 
+    
+    input.close();
     ```
   
   * 最后分析比较计数器的值，输出最大可能的轮密钥。
@@ -128,17 +154,19 @@
     }
     
     cout << "maxkey:" << endl;
-    DecimalToBinary(LL1, L1, 3);
+    Dec2Bin(LL1, L1, 3);
     for (int i = 0; i < 4; i++)
     {
         cout << L1[i];
     }
     cout << " ";
-    DecimalToBinary(LL2, L2, 3);
+    Dec2Bin(LL2, L2, 3);
     for (int i = 0; i < 4; i++)
     {
         cout << L2[i];
     }
+    
+    cout << endl << "time: " << duration.count() << "ms" << endl;
     ```
 
 ## （二）密钥分析

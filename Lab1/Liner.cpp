@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstring>
 #include <fstream>
 #include <chrono>
 #include <cmath>
@@ -15,14 +14,12 @@ int Count[16][16] = {};
 void DecimalToBinary(int decimal, int* binary, int num)
 {
     int i = num - 3;
-    while (decimal > 0)
-    {
+    while (decimal > 0){
         binary[num] = decimal % 2;
         decimal /= 2;
         num--;
     }
-    while (num >= i)
-    {
+    while (num >= i){
         binary[num] = 0;
         num--;
     }
@@ -55,15 +52,15 @@ int main()
         input >> X >> Y;
 
         int len = X.length();
-        for (int j = 0; j < len; j++) x[j] = X[j] - '0';
+        for (int j = 0; j < len; j++) 
+            x[j] = X[j] - '0';
 
         len = Y.length();
-        for (int j = 0; j < len; j++) y[j] = Y[j] - '0';
+        for (int j = 0; j < len; j++) 
+            y[j] = Y[j] - '0';
 
-        for (int j = 0; j < 16; j++)
-        {
-            for (int k = 0; k < 16; k++)
-            {
+        for (int j = 0; j < 16; j++){
+            for (int k = 0; k < 16; k++){
                 // 枚举 L1 和 L2 的可能取值
                 DecimalToBinary(j, L1, 3);
                 DecimalToBinary(k, L2, 3);
@@ -104,15 +101,13 @@ int main()
 
     int max = -1;
     int LL1 = 0, LL2 = 0;
-    for (int i = 0; i < 16; i++)
-    {
-        for (int j = 0; j < 16; j++)
-        {
+
+    for (int i = 0; i < 16; i++){
+        for (int j = 0; j < 16; j++){
             // 计算每个 Count[j][k] 的绝对差值
             Count[i][j] = abs(Count[i][j] - n / 2);
             // 找到最大的差值
-            if (Count[i][j] > max)
-            {
+            if (Count[i][j] > max){
                 max = Count[i][j];
                 LL1 = i;
                 LL2 = j;
@@ -123,19 +118,14 @@ int main()
     cout << "maxkey:" << endl;
     DecimalToBinary(LL1, L1, 3);
     for (int i = 0; i < 4; i++)
-    {
         cout << L1[i];
-    }
     cout << " ";
     DecimalToBinary(LL2, L2, 3);
     for (int i = 0; i < 4; i++)
-    {
         cout << L2[i];
-    }
 
     cout << endl << "time: " << duration.count() << "ms" << endl;
 
     system("pause");
     return 0;
 }
-
